@@ -34,7 +34,7 @@ class SPNetWSL(nn.Module):
         x = self.maps(x)
         sp = self.sp(x)
         x = self.sum(sp)
-        x = x = x.view(x.size(0), -1)
+        x = x.view(x.size(0), -1)
         x = self.classifier(x)
         return x
 
@@ -44,7 +44,7 @@ class SPNetWSL(nn.Module):
         x = self.maps(x)
         sp = self.sp(x)
         x = self.sum(sp)
-        x = x = x.view(x.size(0), -1)
+        x = x.view(x.size(0), -1)
         x = self.classifier(x)
         return x, sp
 

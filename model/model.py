@@ -25,27 +25,22 @@ class WSL(nn.Module):
                                  stride=1, padding=1, groups=2, bias=True)
         self.maps = nn.ReLU()
         self.sp = SoftProposal()
-
-        self.convcls = nn.Conv2d(num_maps, num_classes, kernel_size=3,
-                                 stride=1, padding=1, groups=2, bias=True)
-
         self.sum = spatialpooling.SpatialSumOverMap()
 
         # classification layer
-        # self.classifier = nn.Sequential(
-        #     nn.Dropout(0.5),
-        #     nn.Linear(num_maps, num_classes)
-        # )
+        self.classifier = nn.Sequential(
+            nn.Dropout(0.5),
+            nn.Linear(num_maps, num_classes)
+        )
 
     def forward(self, x):
         x = self.features(x)
         x = self.addconv(x)
         x = self.maps(x)
         sp = self.sp(x)
-        x = self.convcls(sp)
-        x = self.sum(x)
+        x = self.sum(sp)
         x = x.view(x.size(0), -1)
-        # x = self.classifier(x)
+        x = self.classifier(x)
         return x
 
     def get_att_map(self, x):
@@ -53,11 +48,10 @@ class WSL(nn.Module):
         x = self.addconv(x)
         x = self.maps(x)
         sp = self.sp(x)
-        att_map = self.convcls(sp)
-        x = self.sum(att_map)
+        x = self.sum(sp)
         x = x.view(x.size(0), -1)
-        # x = self.classifier(x)
-        return x, att_map
+        x = self.classifier(x)
+        return x, sp
 
     # def load_pretrained_vgg(self, fname):
     #     vgg_param = np.load(fname, encoding='latin1').item()  # vgg16
