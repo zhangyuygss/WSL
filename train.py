@@ -11,8 +11,8 @@ import numpy as np
 import shutil
 import time
 import datetime
-from model.model import *
-from spn_codes.models import SPNetWSL
+from model.model import WSL, save_checkpoint
+# from spn_codes.models import SPNetWSL
 import data_utils.load_voc as load_voc
 import argparse
 import torchvision.transforms as transforms
@@ -44,11 +44,11 @@ parser.add_argument('--gpuID', default=0, type=int,
                     help='GPU ID')
 
 root_dir = '/home/zhangyu/data/VOC2007/'
-save_root = '/disk3/zhangyu/WeaklyDetection/spn_new/'
+save_root = '/disk3/zhangyu/WeaklyDetection/archs2/'
 imgDir = os.path.join(root_dir, 'JPEGImages')
 train_annos = os.path.join(root_dir, 'train_annos')
 val_annos = os.path.join(root_dir, 'val_annos')
-vggParas = '/home/zhangyu/data/VGG_imagenet.npy'
+# vggParas = '/home/zhangyu/data/VGG_imagenet.npy'
 # train_dir = '/home/zhangyu/data/tmp/'
 check_point_dir = os.path.join(save_root, 'checkpt')
 logging_dir = os.path.join(save_root, 'log')
@@ -75,7 +75,7 @@ def main():
     # normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
     #                                  std=[0.229, 0.224, 0.225])
     num_class = 20
-    net = SPNetWSL(num_class)
+    net = WSL(num_class)
 
     if args.cuda:
         net.cuda(gpuID)

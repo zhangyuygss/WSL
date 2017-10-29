@@ -9,12 +9,12 @@ import os
 import numpy as np
 import time
 import datetime
-from model.model import *
+from model.model import WSL
 import data_utils.load_voc as load_voc
 import argparse
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
-from spn_codes.models import vgg16_sp
+from spn_codes.models import SPNetWSL
 from evaluate.rst_for_corloc import rst_for_corloc
 from evaluate.corloc_eval import corloc
 
@@ -32,16 +32,17 @@ parser.add_argument('--no-log', default=False,
                     help='disable logging while training')
 parser.add_argument('--gpuID', default=0, type=int,
                     help='GPU ID')
-parser.add_argument('--ck-pt', default='/home/zhangyu/data/spn_model_best.pth.tar',
+parser.add_argument('--ck-pt', default='/disk3/zhangyu/WeaklyDetection/spn_new/\
+checkpt/best_model/best_checkpoint_epoch20.pth.tar',
                     help='directory of check point will be used in test time')
 
 data_dir = '/home/zhangyu/data/VOC2007_test/'
 # voc_test = '/home/zhangyu/data/VOC2007_test/'
-root_dir = '/disk3/zhangyu/WeaklyDetection/spn/'
+root_dir = '/disk3/zhangyu/WeaklyDetection/spn_new/'
 imgDir = os.path.join(data_dir, 'JPEGImages')
 train_annos = os.path.join(data_dir, 'train_annos')
 trainval_annos = os.path.join(data_dir, 'Annotations')
-att_map_dir = os.path.join(root_dir, 'results/atten_map_10_28/')
+att_map_dir = os.path.join(root_dir, 'results/atten_map_test/')
 cls_number = 20
 
 save_file = os.path.join(att_map_dir, 'predict{}.csv'.format(
@@ -58,14 +59,14 @@ def main():
     # normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
     #                                  std=[0.229, 0.224, 0.225])
     num_class = 20
-    net = vgg16_sp(num_class, pretrained=False)
+    net = WSL(num_class)
     load_pretrained(model=net, fname=args.ck_pt)
     if args.cuda:
         net.cuda(gpuID)
     test_loader = prepare_data(trainval_annos)
 
-    global ft
-    ft = torch.zeros(args.batch_size, 1024, 14, 14)
+    # global ft
+    # ft = torch.zeros(args.batch_size, 1024, 14, 14)
     test(test_loader, net)
     corloc(save_file, trainval_annos)
 
@@ -91,18 +92,16 @@ def test(test_loader, model):
             input_var = torch.autograd.Variable(input, volatile=True)
 
         # compute output: cls_scores, ft as last conv feature, and proposals 
-        hook = model.spatial_pooling.sp.register_forward_hook(get_sp_forward)
-        cls_scores, proposals = model.get_att_map(input_var)
-        hook.remove()
+        cls_scores, ft = model.get_att_map(input_var)
         lr_weigth = model.classifier[1].weight.cpu().data.numpy()
         # convert to npy 
         img_szs = img_szs.numpy()
         scores = cls_scores.cpu().data.numpy()
-        props = proposals.cpu().numpy()
-        feature = ft.numpy()
+        # props = proposals.cpu().numpy()
+        feature = ft.cpu().data.numpy()
         targets = target.cpu().numpy()
         # generate results
-        rst_for_corloc(batch_names, targets, img_szs, scores, feature, props,
+        rst_for_corloc(batch_names, targets, img_szs, scores, feature,
                        lr_weigth, att_map_dir, save_file)
 
         # measure accuracy and record loss
@@ -118,8 +117,8 @@ def test(test_loader, model):
     return accu.avg
 
 
-def get_sp_forward(self, input, output):
-    ft.copy_(output.data)
+# def get_sp_forward(self, input, output):
+#     ft.copy_(output.data)
 
 
 def prepare_data(annos_path):
