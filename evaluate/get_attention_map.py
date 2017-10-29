@@ -2,7 +2,8 @@ import numpy as np
 
 def process_one(activation, weights_LR, proposal):
     n_feat, w, h = activation.shape
-    # activation = activation * proposal
+    if proposal is not None:
+        activation = activation * proposal
     act_vec = np.reshape(activation, [n_feat, w*h])
     n_top = weights_LR.shape[0]
     out = np.zeros([w, h, n_top])
@@ -22,6 +23,6 @@ def get_attention_map(activations, weights_LR, proposals):
     out = np.zeros([batch_size, w, h, n_top])
     for bs in range(batch_size):
         activation = activations[bs, :, :, :]
-        proposal = proposals[bs, :, :]
+        proposal = proposals[bs, :, :] if proposals is not None else None
         out[bs, :, :, :] = process_one(activation, weights_LR, proposal)
     return out

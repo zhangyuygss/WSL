@@ -16,8 +16,8 @@ from .gen_bbox import gen_bbox
 import warnings
 
 
-def rst_for_corloc(batch_names, targets, img_szs, cls_scores, conv_ft, proposals,
-                  lr_weight, att_map_dir, img_list_file):
+def rst_for_corloc(batch_names, targets, img_szs, cls_scores, conv_ft,
+                  lr_weight, att_map_dir, img_list_file, proposals=None):
     batch_size, cls_number = cls_scores.shape
     atten_maps = get_attention_map(conv_ft, lr_weight, proposals)
     df_columns = ['name', 'aeroplane', 'bicycle', 'bird', 'boat',
