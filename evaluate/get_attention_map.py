@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def process_one(activation, weights_LR, proposal):
     n_feat, w, h = activation.shape
     if proposal is not None:
@@ -15,7 +16,7 @@ def process_one(activation, weights_LR, proposal):
     return out
 
 
-def get_attention_map(activations, weights_LR, proposals):
+def get_attention_map(activations, weights_LR, proposals=None):
     # get attention maps for a batch
     _, w, h = activations[0].shape
     n_top = weights_LR.shape[0]
