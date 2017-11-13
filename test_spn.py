@@ -9,7 +9,7 @@ import os
 import numpy as np
 import time
 import datetime
-from model.model import WSL
+from model.model import WSL, load_pretrained
 import data_utils.load_voc as load_voc
 import argparse
 import torchvision.transforms as transforms
@@ -135,25 +135,6 @@ def prepare_data(annos_path):
         train_dataset, batch_size=args.batch_size, shuffle=None,
         num_workers=args.workers, drop_last=True)
     return train_loader
-
-
-def load_pretrained(model, fname, optimizer=None):
-    """
-    resume training from previous checkpoint
-    :param fname: filename(with path) of checkpoint file
-    :return: model, optimizer, checkpoint epoch for train or only model for test
-    """
-    if os.path.isfile(fname):
-        print("=> loading checkpoint '{}'".format(fname))
-        checkpoint = torch.load(fname)
-        model.load_state_dict(checkpoint['state_dict'])
-        if optimizer is not None:
-            optimizer.load_state_dict(checkpoint['optimizer'])
-            return model, optimizer, checkpoint['epoch']
-        else:
-            return model
-    else:
-        raise Exception("=> no checkpoint found at '{}'".format(fname))
 
 
 def accuracy(output, target, threshold=0.5):

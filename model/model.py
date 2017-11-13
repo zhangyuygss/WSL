@@ -112,6 +112,23 @@ def save_checkpoint(state, filename='checkpoint.pth.tar'):
     torch.save(state, filename)
 
 
+def load_pretrained(model, fname, optimizer=None):
+    """
+    resume training from previous checkpoint
+    :param fname: filename(with path) of checkpoint file
+    :return: model, optimizer, checkpoint epoch for train or only model for test
+    """
+    if os.path.isfile(fname):
+        print("=> loading checkpoint '{}'".format(fname))
+        checkpoint = torch.load(fname)
+        model.load_state_dict(checkpoint['state_dict'])
+        if optimizer is not None:
+            optimizer.load_state_dict(checkpoint['optimizer'])
+            return model, optimizer, checkpoint['epoch']
+        else:
+            return model
+    else:
+        raise Exception("=> no checkpoint found at '{}'".format(fname))
 
 
 
