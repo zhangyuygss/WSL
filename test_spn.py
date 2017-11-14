@@ -36,13 +36,13 @@ parser.add_argument('--ck-pt', default='/disk3/zhangyu/WeaklyDetection/spn_new/\
 checkpt/best_model/best_checkpoint_epoch20.pth.tar',
                     help='directory of check point will be used in test time')
 
-data_dir = '/home/zhangyu/data/VOC2007_test/'
+data_dir = '/home/zhangyu/data/VOC2007/'
 # voc_test = '/home/zhangyu/data/VOC2007_test/'
-root_dir = '/disk3/zhangyu/WeaklyDetection/spn_new/'
+root_dir = '/disk3/zhangyu/WeaklyLoc/spn_train_by_me_bicubic_intep/'
 imgDir = os.path.join(data_dir, 'JPEGImages')
 train_annos = os.path.join(data_dir, 'train_annos')
 trainval_annos = os.path.join(data_dir, 'Annotations')
-att_map_dir = os.path.join(root_dir, 'results/atten_map_test/')
+att_map_dir = os.path.join(root_dir, 'results/atten_map_trainval/')
 cls_number = 20
 
 save_file = os.path.join(att_map_dir, 'predict{}.csv'.format(
@@ -68,7 +68,8 @@ def main():
     # global ft
     # ft = torch.zeros(args.batch_size, 1024, 14, 14)
     test(test_loader, net)
-    corloc(save_file, trainval_annos)
+    corloc_rst = corloc(save_file, trainval_annos)
+    print('Corloc results: {}'.format(corloc_rst))
 
 
 def test(test_loader, model):

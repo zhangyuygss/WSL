@@ -48,7 +48,7 @@ def rst_for_corloc(batch_names, targets, img_szs, cls_scores, conv_ft,
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 cls_map = skimage.img_as_float(cls_map)
-                cls_map = imtrans.resize(cls_map, img_sz, mode='reflect')
+                cls_map = imtrans.resize(cls_map, img_sz,order=3 , mode='reflect')
                 cls_map_norm = imtrans.resize(cls_map_norm, img_sz, mode='reflect')
                 cls_map_file = map_save_dir + '/' + img_name.split('.')[0] + \
                                '_{}.png'.format(cls_idx)
