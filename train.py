@@ -43,8 +43,8 @@ parser.add_argument('--no-log', default=False,
 parser.add_argument('--gpuID', default=0, type=int,
                     help='GPU ID')
 
-root_dir = '/home/zhangyu/data/VOC2007/'
-save_root = '/disk3/zhangyu/WeaklyDetection/archs2/'
+root_dir = '/disk2/zhangyu/data/voc2007/VOC2007trainval/'
+save_root = '/disk4/zhangyu/weakly_loc/spn_model_myeval/'
 imgDir = os.path.join(root_dir, 'JPEGImages')
 train_annos = os.path.join(root_dir, 'train_annos')
 val_annos = os.path.join(root_dir, 'val_annos')

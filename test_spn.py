@@ -36,13 +36,13 @@ parser.add_argument('--ck-pt', default='/disk3/zhangyu/WeaklyDetection/spn_new/\
 checkpt/best_model/best_checkpoint_epoch20.pth.tar',
                     help='directory of check point will be used in test time')
 
-data_dir = '/home/zhangyu/data/VOC2007/'
+data_dir = '/disk2/zhangyu/data/voc2007/VOC2007test/'
 # voc_test = '/home/zhangyu/data/VOC2007_test/'
-root_dir = '/disk3/zhangyu/WeaklyLoc/spn_train_by_me_bicubic_intep/'
+root_dir = '/disk4/zhangyu/weakly_loc/spn_model_myeval/'
 imgDir = os.path.join(data_dir, 'JPEGImages')
 train_annos = os.path.join(data_dir, 'train_annos')
 trainval_annos = os.path.join(data_dir, 'Annotations')
-att_map_dir = os.path.join(root_dir, 'results/atten_map_trainval/')
+att_map_dir = os.path.join(root_dir, 'results/atten_map/')
 cls_number = 20
 
 save_file = os.path.join(att_map_dir, 'predict{}.csv'.format(
@@ -92,10 +92,10 @@ def test(test_loader, model):
         else:
             input_var = torch.autograd.Variable(input, volatile=True)
 
-        # compute output: cls_scores, ft as last conv feature, and proposals 
+        # compute output: cls_scores, ft as last conv feature, and proposals
         cls_scores, ft = model.get_att_map(input_var)
         lr_weigth = model.classifier[1].weight.cpu().data.numpy()
-        # convert to npy 
+        # convert to npy
         img_szs = img_szs.numpy()
         scores = cls_scores.cpu().data.numpy()
         # props = proposals.cpu().numpy()
